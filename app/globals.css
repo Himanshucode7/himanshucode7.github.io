@@ -1,26 +1,475 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * Theme model
+ * - No data-theme attribute: follow the OS (color-scheme: light dark).
+ * - data-theme="light" | "dark": explicit choice, set before paint by the
+ *   inline script in app/layout.tsx and by the theme toggle.
+ * Colors are written once with light-dark(), so both themes live side by side.
+ */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces */
+  --background: light-dark(oklch(0.985 0.001 106.4), oklch(0.141 0.004 285.8));
+  --surface: light-dark(oklch(1 0 0), oklch(0.179 0.004 286));
+  --surface-raised: light-dark(oklch(0.97 0.002 106.4), oklch(0.205 0.005 286));
+
+  /* Text */
+  --foreground: light-dark(oklch(0.145 0 0), oklch(0.985 0 0));
+  --muted: light-dark(oklch(0.442 0.015 285.8), oklch(0.712 0.013 286.1));
+
+  /* Lines. --border is decorative; --border-strong meets 3:1 for form controls. */
+  --border: light-dark(oklch(0.145 0 0 / 0.09), oklch(1 0 0 / 0.08));
+  --border-strong: oklch(0.552 0.014 285.9);
+
+  /* Accent: violet. --accent for fills/rings, --accent-text for small text (≥ 6:1). */
+  --accent: light-dark(oklch(0.513 0.236 282.7), oklch(0.599 0.23 286.2));
+  --accent-text: light-dark(oklch(0.513 0.236 282.7), oklch(0.708 0.164 289.5));
+  --accent-soft: light-dark(oklch(0.513 0.236 282.7 / 0.08), oklch(0.599 0.23 286.2 / 0.14));
+  --focus-ring: var(--accent);
+
+  /* Hero mesh — the only place colour is allowed to bloom. */
+  --mesh-1: light-dark(oklch(0.72 0.16 286 / 0.32), oklch(0.55 0.23 286 / 0.42));
+  --mesh-2: light-dark(oklch(0.8 0.1 250 / 0.3), oklch(0.42 0.17 268 / 0.38));
+  --mesh-3: light-dark(oklch(0.85 0.08 330 / 0.28), oklch(0.5 0.14 320 / 0.18));
+  --grid-dot: light-dark(oklch(0.145 0 0 / 0.1), oklch(1 0 0 / 0.07));
+
+  /* Layout */
+  --gutter: 16px;
+  --header-height: 64px;
+
+  /* Motion */
+  --duration-micro: 150ms;
+  --duration-ui: 300ms;
+  --duration-reveal: 700ms;
+  --duration-page: 900ms;
+  --stagger: 50ms;
+}
+
+/* Works on any element, so a subtree (e.g. a styleguide panel) can force a theme. */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+
+@theme {
+  /* Only semantic colours exist; the default palette is removed on purpose. */
+  --color-*: initial;
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-accent-soft: var(--accent-soft);
+  --color-white: oklch(1 0 0);
+  --color-black: oklch(0 0 0);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Type scale */
+  --text-display: clamp(3rem, 8vw, 7.5rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.045em;
+  --text-h2: clamp(2rem, 4vw, 3.5rem);
+  --text-h2--line-height: 1.04;
+  --text-h2--letter-spacing: -0.035em;
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.02em;
+  --text-lead: clamp(1.125rem, 1.4vw, 1.3125rem);
+  --text-lead--line-height: 1.55;
+  --text-lead--letter-spacing: -0.011em;
+  --text-statement: clamp(1.375rem, 2.4vw, 2rem);
+  --text-statement--line-height: 1.38;
+  --text-statement--letter-spacing: -0.02em;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.55;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.06em;
+
+  --radius-card: 1rem;
+
+  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.04), 0 8px 24px -12px oklch(0 0 0 / 0.12);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  /* A critically damped spring: settles without overshoot. */
+  --ease-spring: linear(0, 0.21 6%, 0.5 15%, 0.73 26%, 0.87 38%, 0.95 52%, 0.99 70%, 1);
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: calc(1200px + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility section-y {
+  padding-block: clamp(96px, 14vh, 180px);
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: oklch(1 0 0);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  [id] {
+    scroll-margin-top: calc(var(--header-height) + 24px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ───────────────────────── Motion primitives ───────────────────────── */
+
+/* <TextMask>: lines rise out of an overflow mask. Pure CSS, plays on load. */
+.mask-line {
+  display: block;
+  overflow: clip;
+  /* Room for descenders without clipping them. */
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+.mask-line > span {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mask-line > span {
+    animation: mask-up var(--duration-page) var(--ease-out-expo) both;
+    animation-delay: calc(var(--intro-delay, 0ms) + var(--line, 0) * 80ms);
+  }
+}
+
+@keyframes mask-up {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+/*
+ * Phones: the headline is the LCP element and hydration can block the first
+ * animation frame, so it starts mostly visible (painted with the first frame)
+ * and only rises the last stretch.
+ */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .mask-line > span {
+    animation-name: mask-up-short;
+  }
+}
+
+@keyframes mask-up-short {
+  from {
+    transform: translateY(35%);
+  }
+}
+
+/*
+ * Entrance for hero content: opacity + 24px rise. No blur here on purpose:
+ * filter animations repaint on the main thread during the LCP window.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .enter {
+    animation: enter var(--duration-reveal) var(--ease-out-expo) both;
+    animation-delay: calc(var(--intro-delay, 0ms) + var(--enter-delay, 0ms));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    animation: fade 200ms ease-out both;
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/*
+ * <Reveal>: hidden only once the observer is ready (html[data-reveal-ready]),
+ * so content is always visible if JavaScript never runs.
+ */
+[data-reveal] {
+  transition:
+    opacity var(--duration-reveal) var(--ease-out-expo),
+    transform var(--duration-reveal) var(--ease-out-expo),
+    filter var(--duration-reveal) var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html[data-reveal-ready] [data-reveal]:not([data-revealed]) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* Blur repaints on the main thread, so it is reserved for desktop pointers. */
+@media (hover: hover) and (pointer: fine) {
+  html[data-reveal-ready] [data-reveal]:not([data-revealed]) {
+    filter: blur(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    transition: opacity 200ms ease-out;
+  }
+
+  html[data-reveal-ready] [data-reveal]:not([data-revealed]) {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Hairline that draws in when its <Reveal> parent is revealed. */
+.draw-line {
+  transform-origin: left;
+  transition: transform 1100ms var(--ease-in-out-quart);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html[data-reveal-ready] [data-reveal]:not([data-revealed]) .draw-line {
+  transform: scaleX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draw-line {
+    transition: none;
+  }
+
+  html[data-reveal-ready] [data-reveal]:not([data-revealed]) .draw-line {
+    transform: none;
+  }
+}
+
+/* <Magnetic>: the JS sets transform; CSS supplies the damped return. */
+.magnetic {
+  transition: transform 500ms var(--ease-spring);
+}
+
+/* Bio highlight, scrubbed by scroll. Colour (not opacity) keeps contrast ≥ 7:1. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scrub {
+      view-timeline: --scrub block;
+    }
+
+    .scrub-word {
+      color: var(--muted);
+      animation: scrub-word linear both;
+      animation-timeline: --scrub;
+      animation-range-start: cover calc(18% + var(--p) * 30%);
+      animation-range-end: cover calc(22% + var(--p) * 30%);
+    }
+  }
+}
+
+@keyframes scrub-word {
+  to {
+    color: var(--foreground);
+  }
+}
+
+/* Status dot pulse. */
+@media (prefers-reduced-motion: no-preference) {
+  .pulse-ring {
+    animation: pulse-ring 2.4s var(--ease-out-expo) infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* ───────────────────────── Intro curtain ───────────────────────── */
+
+.intro {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-intro] {
+    --intro-delay: 650ms;
+  }
+
+  html[data-intro] .intro {
+    display: grid;
+    animation: curtain 600ms var(--ease-in-out-quart) 500ms both;
+  }
+
+  html[data-intro] .intro-name {
+    animation: mask-up 500ms var(--ease-out-expo) both;
+  }
+}
+
+/* Transform only, so the lift runs on the compositor during page load. */
+@keyframes curtain {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+/* ───────────────────────── Hero mesh ───────────────────────── */
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mesh-blob {
+    animation: drift var(--drift, 24s) ease-in-out infinite alternate;
+  }
+
+  [data-paused] .mesh-blob {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(var(--dx, 4%), var(--dy, 6%), 0) scale(var(--ds, 1.08));
+  }
+}
+
+.mesh-follow {
+  transform: translate3d(calc(var(--mx, 0) * 24px), calc(var(--my, 0) * 24px), 0);
+  transition: transform 1200ms var(--ease-out-expo);
+}
+
+/* ───────────────────────── Theme switch (view transition) ───────────────────────── */
+
+:root[data-theme-switching]::view-transition-old(root),
+:root[data-theme-switching]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Popover menu (mobile navigation). */
+[popover].menu-popover {
+  inset: auto;
+  top: calc(var(--header-height) + 8px);
+  right: var(--gutter);
+  left: var(--gutter);
+  width: auto;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [popover].menu-popover {
+    transition:
+      opacity var(--duration-ui) var(--ease-out-expo),
+      transform var(--duration-ui) var(--ease-out-expo),
+      overlay var(--duration-ui) allow-discrete,
+      display var(--duration-ui) allow-discrete;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  [popover].menu-popover:popover-open {
+    opacity: 1;
+    transform: none;
+  }
+
+  @starting-style {
+    [popover].menu-popover:popover-open {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
 }
