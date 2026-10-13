@@ -1,14 +1,15 @@
 # Himanshu Rana — Portfolio
 
 Personal site built with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS v4.
-Every page is statically generated.
+It is a fully static export, deployed to GitHub Pages by `.github/workflows/deploy.yml`
+on every push to `main`.
 
 ## Scripts
 
 ```bash
 npm run dev        # local development
-npm run build      # production build
-npm run start      # serve the production build
+npm run build      # static export to ./out
+npm run start      # serve ./out locally (http://localhost:3000)
 npm run lint       # ESLint
 npm run typecheck  # route type generation + tsc
 ```
@@ -36,4 +37,5 @@ Tokens (colour, type, motion, layout) are defined once in `app/globals.css`. Vis
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | No | Public origin, e.g. `https://himanshurana.dev`. Enables canonical URLs and absolute sitemap/OG links. On Vercel, the production URL is detected automatically. |
+| `NEXT_PUBLIC_SITE_URL` | No | Public URL, including any sub-path. Enables canonical URLs and absolute sitemap links. Set automatically by the Pages workflow. |
+| `PAGES_BASE_PATH` | No | Sub-path the site is served from, e.g. `/portfolio`. Set automatically by the Pages workflow; leave empty locally. |

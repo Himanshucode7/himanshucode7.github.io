@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
 import { projects } from "@/content/projects";
-import { siteUrl } from "@/lib/site-url";
+import { absoluteUrl } from "@/lib/site-url";
+
+// Required by `output: "export"`: generate this file once at build time.
+export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    { url: new URL("/", siteUrl).href, changeFrequency: "monthly", priority: 1 },
+    { url: absoluteUrl("/"), changeFrequency: "monthly", priority: 1 },
     ...projects.map((project) => ({
-      url: new URL(`/work/${project.slug}`, siteUrl).href,
+      url: absoluteUrl(`/work/${project.slug}`),
       changeFrequency: "yearly" as const,
       priority: 0.8,
     })),

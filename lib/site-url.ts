@@ -1,6 +1,9 @@
+/** Sub-path the site is served from ("" or e.g. "/portfolio"); see next.config.ts. */
+export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 /**
- * The public origin of the site.
- * - NEXT_PUBLIC_SITE_URL wins when set (custom domain).
+ * The public URL of the site, including any base path.
+ * - NEXT_PUBLIC_SITE_URL wins when set (GitHub Pages workflow, custom domain).
  * - On Vercel, VERCEL_PROJECT_PRODUCTION_URL is provided automatically.
  * - Otherwise we are local, and canonical URLs are omitted.
  */
@@ -15,3 +18,13 @@ function resolveSiteUrl(): { url: URL; isProduction: boolean } {
 }
 
 export const { url: siteUrl, isProduction: hasProductionUrl } = resolveSiteUrl();
+
+/** Absolute URL for a site path, keeping the base path (`new URL("/x", base)` would drop it). */
+export function absoluteUrl(path: `/${string}`): string {
+  return `${siteUrl.href.replace(/\/$/, "")}${path}`;
+}
+
+/** Prefixes the base path for plain <a> links to files in /public (next/link does this itself). */
+export function withBasePath(path: `/${string}`): string {
+  return `${basePath}${path}`;
+}

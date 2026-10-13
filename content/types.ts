@@ -44,7 +44,7 @@ export type Profile = {
   };
   email: string;
   /** Public resume path, or null until a public version is supplied. */
-  resume: string | null;
+  resume: `/${string}` | null;
 };
 
 export type ExperienceItem = {

@@ -5,6 +5,7 @@ import { ButtonArrow, buttonStyles } from "@/components/ui/button";
 import { CopyEmailButton } from "@/components/ui/copy-email-button";
 import { ArrowUpRightIcon, MailIcon } from "@/components/ui/icons";
 import { headingId } from "@/components/ui/section-heading";
+import { withBasePath } from "@/lib/site-url";
 
 type Destination = { label: string; value: string; href: string; external: boolean };
 
@@ -14,7 +15,7 @@ export function Contact() {
   const destinations: Destination[] = [
     { label: ui.email, value: profile.email, href: `mailto:${profile.email}`, external: false },
     ...socials.map((social) => ({ label: social.label, value: social.handle, href: social.href, external: true })),
-    ...(profile.resume ? [{ label: ui.resume, value: ui.resumeFormat, href: profile.resume, external: true }] : []),
+    ...(profile.resume ? [{ label: ui.resume, value: ui.resumeFormat, href: withBasePath(profile.resume), external: true }] : []),
   ];
 
   return (
