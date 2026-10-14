@@ -2,15 +2,17 @@ import type { Capabilities } from "./types";
 
 export const capabilities: Capabilities = {
   stack: {
-    title: "Stack",
+    title: "What I work with",
     items: [
-      "React 19",
       "TypeScript",
+      "JavaScript",
+      "React",
       "Next.js",
+      "HTML & CSS",
       "Tailwind CSS",
       "TanStack Query",
       "Zustand",
-      "Axios",
+      "REST APIs",
       "Vitest",
       "Storybook",
       "Docker",

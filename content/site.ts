@@ -3,7 +3,7 @@ import type { NavItem, SectionCopy, SocialLink } from "./types";
 export const site = {
   title: "Himanshu Rana — Frontend Engineer",
   description:
-    "Himanshu Rana is a frontend engineer in Gurgaon, India, building fast, accessible React and TypeScript interfaces for data-heavy products.",
+    "Himanshu Rana is a frontend engineer (SDE-1) at Digital Paani in Gurgaon, India, building data-heavy web apps with React, Next.js and TypeScript.",
   credit: "Designed and built by Himanshu Rana.",
 } as const;
 
@@ -33,26 +33,28 @@ export const sections = {
   work: {
     id: "work",
     label: "Selected work",
-    title: "Case studies, written properly.",
+    title: "Case studies, in progress.",
     intro:
-      "Detailed write-ups of production work are on their way: a shared component library, dashboard performance, and client-side data layers. Each one will cover the problem, the decisions and what changed.",
+      "I'm writing up a few pieces of production work properly: a shared component library, dashboard performance and client-side data layers. Each one will cover the problem, the decisions I made and what changed. Until then, my code is on GitHub.",
   },
   about: {
     id: "about",
     label: "About",
-    title: "Quiet interfaces, careful engineering.",
+    title: "How I work.",
   },
   experience: {
     id: "experience",
     label: "Experience",
     title: "Where I've worked.",
+    intro:
+      "I've been shipping production React since 2024: first as an intern modernising legacy JavaScript, then on fintech dashboards and a shared component library at WeRize, and now as an SDE-1 at Digital Paani.",
   },
   contact: {
     id: "contact",
     label: "Contact",
-    title: "Let's build something.",
+    title: "Say hello.",
     intro:
-      "Have a product with a hard interface problem, or a role where frontend quality matters? I'd like to hear about it.",
+      "I'm currently looking for my next frontend role. Whether you have an opportunity, a question, or just want to say hi, my inbox is always open and I'll do my best to get back to you.",
   },
 } as const satisfies Record<string, SectionCopy>;
 

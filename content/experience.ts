@@ -13,9 +13,14 @@ export const experience: readonly ExperienceItem[] = [
     location: "Gurgaon, India",
     start: "2026-05",
     end: "present",
-    summary: "Building React and TypeScript interfaces for data-heavy products.",
-    // TODO(himanshu): add 2–3 accomplishments you can publish.
-    highlights: [],
+    summary:
+      "Building and maintaining frontend features for Digital Paani's data-heavy web products, using React, Next.js and TypeScript.",
+    // TODO(himanshu): confirm each line is true, then swap in specific features you've shipped.
+    highlights: [
+      "Build and maintain features across Digital Paani's web application with React, Next.js and TypeScript.",
+      "Work closely with designers and other engineers to turn designs and APIs into consistent, responsive interfaces.",
+      "Test UI across browsers and screen sizes so it holds up wherever people use it.",
+    ],
   },
   {
     id: "werize",
@@ -25,14 +30,14 @@ export const experience: readonly ExperienceItem[] = [
     start: "2025-08",
     end: "2026-04",
     summary:
-      "Built fintech dashboards and the shared React component library behind them.",
+      "Built fintech dashboards, the shared React component library behind them, and the client-side data layer that fed them.",
     // TODO(himanshu): confirm measurements before restoring numbers
     // (resume: −35% tech debt, +40% Core Web Vitals, −60% API overhead, −25% cycle time, 80% coverage).
     highlights: [
-      "Built a standardized internal UI component library in React 19 and TypeScript.",
-      "Introduced code splitting and lazy loading on high-traffic fintech dashboards to improve LCP and INP.",
-      "Designed state management with TanStack Query and Zustand, using client-side caching to cut redundant API calls.",
-      "Led Vitest and Storybook workflows for testing and documenting components.",
+      "Built an internal UI component library in React 19 and TypeScript, so dashboards shared one consistent set of components instead of one-off variants.",
+      "Improved loading and responsiveness (LCP and INP) on high-traffic dashboards by introducing code splitting and lazy loading.",
+      "Designed the state layer with TanStack Query and Zustand, using client-side caching to cut redundant API calls.",
+      "Led the Vitest and Storybook workflow for testing components and documenting them in isolation.",
     ],
   },
   {
@@ -42,11 +47,12 @@ export const experience: readonly ExperienceItem[] = [
     location: "Gurgaon, India",
     start: "2024-06",
     end: "2025-07",
-    summary: "Shipped responsive React interfaces and modernised legacy JavaScript.",
+    summary:
+      "Where I started: shipping responsive React interfaces and moving legacy JavaScript onto modern components.",
     highlights: [
       "Refactored legacy JavaScript modules into reusable React function components.",
-      "Built job boards with client-side filtering and debounced search over a REST API.",
-      "Wrote regex-based form validation to catch invalid submissions before they reached the backend.",
+      "Built job-board pages with client-side filtering and debounced search on top of a REST API.",
+      "Added regex-based form validation that caught invalid input before it reached the backend.",
     ],
   },
 ];
