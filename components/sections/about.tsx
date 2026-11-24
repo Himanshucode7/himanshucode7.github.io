@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { Fragment, type CSSProperties } from "react";
 import { capabilities } from "@/content/capabilities";
+import { media } from "@/content/media";
 import { profile } from "@/content/profile";
 import { sections, ui } from "@/content/site";
+import { Photo } from "@/components/media/photo";
 import { Reveal } from "@/components/motion/reveal";
-import { Card, CardLabel } from "@/components/ui/card";
 import { headingId, SectionHeading } from "@/components/ui/section-heading";
 
 /** Splits a paragraph into words carrying their position (0–1) for the scroll highlight. */
@@ -24,91 +24,66 @@ function ScrubText({ text }: { text: string }) {
   );
 }
 
+/**
+ * The light panel that slides up over the sticky hero (it sits above it in the
+ * stacking order and has an opaque background).
+ */
 export function About() {
   const copy = sections.about;
   const [lead, ...rest] = profile.bio;
-  const { stack, principles, stat, highlights } = capabilities;
+  const { stat, highlights } = capabilities;
+  const photo = media.about;
 
   return (
-    <section id={copy.id} aria-labelledby={headingId(copy)} className="section-y">
+    <section id={copy.id} aria-labelledby={headingId(copy)} className="tone-light relative z-10 section-y">
       <div className="container-page">
         <SectionHeading copy={copy} />
 
-        <div className="mt-16 grid gap-10 md:mt-20 md:grid-cols-12 md:gap-6">
-          <Reveal className="md:col-span-3">
-            <div className="relative aspect-[4/5] w-40 overflow-hidden rounded-card border border-border bg-surface-raised md:w-full md:max-w-60">
-              <Image
-                src={profile.portrait.src}
-                alt={profile.portrait.alt}
-                fill
-                sizes="(min-width: 768px) 240px, 160px"
-                placeholder="blur"
-                className="object-cover object-[50%_28%]"
-              />
-            </div>
+        <div className="mt-16 grid gap-12 md:mt-24 md:grid-cols-12 md:gap-6">
+          <Reveal className="md:col-span-5 lg:col-span-4">
+            <figure className="md:sticky md:top-[calc(var(--header-height)+32px)]">
+              <div
+                className="relative overflow-hidden rounded-photo bg-surface-raised"
+                style={{ aspectRatio: `${photo.asset.width} / ${photo.asset.height}` }}
+              >
+                <Photo
+                  photo={photo}
+                  sizes="(min-width: 1024px) 30vw, (min-width: 768px) 40vw, 92vw"
+                  className="absolute inset-0 size-full object-cover"
+                />
+              </div>
+              <figcaption className="label mt-4 flex justify-between gap-4">
+                <span>{profile.name}</span>
+                <span>{profile.location}</span>
+              </figcaption>
+            </figure>
           </Reveal>
-          <div className="grid gap-8 md:col-span-9">
+
+          <div className="grid content-start gap-8 md:col-span-7 md:col-start-6 lg:col-start-6">
             <ScrubText text={lead} />
             {rest.map((paragraph, index) => (
               <Reveal key={index} delay={index}>
-                <p className="max-w-[62ch] text-muted">{paragraph}</p>
+                <p className="max-w-[60ch] text-muted">{paragraph}</p>
               </Reveal>
             ))}
-          </div>
-        </div>
 
-        <ul className="mt-20 grid gap-4 md:mt-28 md:grid-cols-12" aria-label={ui.capabilities}>
-          <Reveal as="li" className="md:col-span-7">
-            <Card className="h-full">
-              <CardLabel>{stack.title}</CardLabel>
-              <ul className="mt-6 flex flex-wrap gap-2">
-                {stack.items.map((item) => (
-                  <li key={item} className="rounded-full border border-border bg-background px-3.5 py-1.5 text-small">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </Reveal>
-
-          <Reveal as="li" delay={1} className="md:col-span-5">
-            <Card className="flex h-full flex-col justify-between gap-10">
-              <CardLabel>{stat.label}</CardLabel>
-              <div>
-                <p className="text-h2 font-semibold tabular-nums">{stat.value}</p>
-                <p className="mt-3 text-small text-muted">{stat.detail}</p>
-              </div>
-            </Card>
-          </Reveal>
-
-          <Reveal as="li" className="md:col-span-7">
-            <Card className="h-full">
-              <CardLabel>{principles.title}</CardLabel>
-              <dl className="mt-6 grid gap-6 sm:grid-cols-3">
-                {principles.items.map((item) => (
-                  <div key={item.title}>
+            <Reveal>
+              <dl className="mt-6 grid border-t border-border sm:grid-cols-2" aria-label={ui.capabilities}>
+                <div className="border-b border-border py-6 sm:pr-6">
+                  <dt className="label">{stat.label}</dt>
+                  <dd className="mt-3 text-h2 font-medium tabular-nums">{stat.value}</dd>
+                  <dd className="mt-2 text-small text-muted">{stat.detail}</dd>
+                </div>
+                {highlights.items.map((item) => (
+                  <div key={item.title} className="border-b border-border py-6 sm:odd:pr-6 sm:even:pl-6">
                     <dt className="font-medium">{item.title}</dt>
                     <dd className="mt-2 text-small text-muted">{item.body}</dd>
                   </div>
                 ))}
               </dl>
-            </Card>
-          </Reveal>
-
-          <Reveal as="li" delay={1} className="md:col-span-5">
-            <Card className="h-full">
-              <CardLabel>{highlights.title}</CardLabel>
-              <dl className="mt-6 grid gap-5">
-                {highlights.items.map((item) => (
-                  <div key={item.title}>
-                    <dt className="font-medium">{item.title}</dt>
-                    <dd className="mt-1 text-small text-muted">{item.body}</dd>
-                  </div>
-                ))}
-              </dl>
-            </Card>
-          </Reveal>
-        </ul>
+            </Reveal>
+          </div>
+        </div>
       </div>
     </section>
   );

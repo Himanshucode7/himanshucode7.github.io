@@ -1,23 +1,40 @@
 import type { Capabilities } from "./types";
 
+/* Skills follow the resume, frontend first. */
 export const capabilities: Capabilities = {
-  stack: {
-    title: "What I work with",
-    items: [
-      "TypeScript",
-      "JavaScript",
-      "React",
-      "Next.js",
-      "HTML & CSS",
-      "Tailwind CSS",
-      "TanStack Query",
-      "Zustand",
-      "REST APIs",
-      "Vitest",
-      "Storybook",
-      "Docker",
-    ],
-  },
+  skills: [
+    {
+      id: "frontend",
+      title: "Frontend",
+      items: ["React", "Next.js", "TypeScript", "JavaScript (ES6+)", "HTML", "CSS", "Tailwind CSS", "Angular"],
+    },
+    {
+      id: "data",
+      title: "State & data",
+      items: ["TanStack Query", "Zustand", "Axios", "REST APIs", "JSON", "LocalStorage"],
+    },
+    {
+      id: "quality",
+      title: "Testing & tools",
+      items: ["Vitest", "Storybook", "Git", "GitHub", "Docker", "Postman", "Jira"],
+    },
+    {
+      id: "backend",
+      title: "Backend & databases",
+      items: ["Node.js", "Express.js", ".NET", "PostgreSQL", "MySQL", "MongoDB", "Firebase"],
+    },
+    {
+      id: "practices",
+      title: "Practices",
+      items: [
+        "Component-driven development",
+        "Responsive design",
+        "Performance optimisation",
+        "Cross-browser compatibility",
+        "Agile / Scrum",
+      ],
+    },
+  ],
   principles: {
     title: "What I care about",
     items: [
@@ -38,7 +55,7 @@ export const capabilities: Capabilities = {
   stat: {
     value: "2024",
     label: "Shipping production React since",
-    detail: "Three roles: an internship, fintech at WeRize, and now Digital Paani.",
+    detail: "Three roles: an internship, fintech at WeRize, and now DigitalPaani.",
   },
   highlights: {
     title: "Beyond the editor",
@@ -52,8 +69,8 @@ export const capabilities: Capabilities = {
         body: "Cadet Captain, leading 45+ cadets.",
       },
       {
-        title: "B.Tech, Computer Science",
-        body: "J.C. Bose University of Science and Technology, 2020–2024.",
+        title: "B.Tech, Computer Engineering",
+        body: "J.C. Bose University of Science and Technology, YMCA, 2020–2024.",
       },
     ],
   },

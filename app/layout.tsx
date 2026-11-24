@@ -1,18 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { profile } from "@/content/profile";
 import { navigation, site, ui } from "@/content/site";
 import { Intro } from "@/components/layout/intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { CustomCursor } from "@/components/motion/custom-cursor";
 import { DocumentEffects } from "@/components/motion/document-effects";
 import { InlineScript } from "@/components/ui/inline-script";
 import { documentScript } from "@/lib/document-script";
 import { hasProductionUrl, siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Variable font: every weight from one file. Display type uses 500 throughout.
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
 });
 
@@ -23,6 +25,9 @@ const geistMono = Geist_Mono({
   preload: false,
 });
 
+// The social card is declared here rather than as app/opengraph-image.jpg so it can carry
+// alt text (Turbopack builds ignore opengraph-image.alt.txt). Relative URLs resolve
+// against metadataBase, which includes any GitHub Pages sub-path.
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: {
@@ -40,25 +45,25 @@ export const metadata: Metadata = {
     title: site.title,
     description: site.description,
     url: "/",
+    images: [site.ogImage],
   },
   twitter: {
     card: "summary_large_image",
     title: site.title,
     description: site.description,
+    images: [site.ogImage],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAFAF9" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090B" },
-  ],
-  colorScheme: "light dark",
+  // The page opens on the black hero; browser chrome matches it.
+  themeColor: "#0a0a0a",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${interTight.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         <InlineScript html={documentScript} />
       </head>
@@ -73,12 +78,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader
           name={profile.name}
           items={navigation}
-          labels={{ primaryNav: ui.primaryNav, menu: ui.menu, themeToggle: ui.themeToggle, contact: ui.getInTouch }}
+          labels={{ primaryNav: ui.primaryNav, menu: ui.menu, close: ui.closeMenu, home: ui.home }}
         />
         <main id="main" tabIndex={-1} className="outline-none">
           {children}
         </main>
         <SiteFooter />
+        <CustomCursor />
         <DocumentEffects />
       </body>
     </html>

@@ -28,7 +28,7 @@ export function ExperienceRow({ role, company, location, range, summary, highlig
   return (
     <div className="grid gap-x-6 gap-y-3 py-8 md:grid-cols-9 md:py-10">
       <div className="md:col-span-6">
-        <h3 className="text-h3 font-semibold">{role}</h3>
+        <h3 className="text-h3 font-medium">{role}</h3>
         <p className="mt-1 text-muted">
           {company} <span aria-hidden="true">·</span> {location}
         </p>

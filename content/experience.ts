@@ -1,25 +1,27 @@
 import type { ExperienceItem } from "./types";
 
 /*
- * Source: Himanshu's resumes (resume_Himanshu1.pdf for dates, Himanshu_frontend_dev.pdf for
- * which bullets belong to which role). Percentages from the resume are intentionally left out
- * until each one has a known baseline and measurement method.
+ * Source: Himanshu's resume (Himanshu_Resume_Software_Engineer_JAVA_AWS__.pdf). Months the
+ * resume leaves open (DigitalPaani start, WeRize end) keep the values from the earlier resume.
+ * Percentages from the resume are intentionally left out until each one has a known baseline
+ * and measurement method.
  */
 export const experience: readonly ExperienceItem[] = [
   {
-    id: "digital-paani",
+    id: "digitalpaani",
     role: "SDE-1, Frontend",
-    company: "Digital Paani",
-    location: "Gurgaon, India",
+    company: "DigitalPaani",
+    location: "Gurugram, India",
     start: "2026-05",
     end: "present",
     summary:
-      "Building and maintaining frontend features for Digital Paani's data-heavy web products, using React, Next.js and TypeScript.",
-    // TODO(himanshu): confirm each line is true, then swap in specific features you've shipped.
+      "Building frontend features for DigitalPaani's production web applications, from access control and user management to alerting.",
     highlights: [
-      "Build and maintain features across Digital Paani's web application with React, Next.js and TypeScript.",
-      "Work closely with designers and other engineers to turn designs and APIs into consistent, responsive interfaces.",
-      "Test UI across browsers and screen sizes so it holds up wherever people use it.",
+      "Develop and maintain frontend features for production applications with React and modern JavaScript.",
+      "Worked on role-based access control and user management interfaces as part of a redesigned roles and permissions system.",
+      "Build and improve alert management interfaces: notification workflows, SLA tracking, escalation states and alert status indicators.",
+      "Integrate REST APIs and handle application state, data rendering and dynamic UI updates.",
+      "Trace frontend bugs to their root cause, and support releases through code reviews, feature testing and production support.",
     ],
   },
   {
@@ -37,6 +39,7 @@ export const experience: readonly ExperienceItem[] = [
       "Built an internal UI component library in React 19 and TypeScript, so dashboards shared one consistent set of components instead of one-off variants.",
       "Improved loading and responsiveness (LCP and INP) on high-traffic dashboards by introducing code splitting and lazy loading.",
       "Designed the state layer with TanStack Query and Zustand, using client-side caching to cut redundant API calls.",
+      "Integrated REST microservices through custom request interceptors, protecting data integrity in financial flows.",
       "Led the Vitest and Storybook workflow for testing components and documenting them in isolation.",
     ],
   },
@@ -44,13 +47,14 @@ export const experience: readonly ExperienceItem[] = [
     id: "yhv",
     role: "Frontend Developer Intern",
     company: "Your Hobbies And Venture",
-    location: "Gurgaon, India",
+    location: "Faridabad, India",
     start: "2024-06",
     end: "2025-07",
     summary:
       "Where I started: shipping responsive React interfaces and moving legacy JavaScript onto modern components.",
     highlights: [
       "Refactored legacy JavaScript modules into reusable React function components.",
+      "Built mobile-first interfaces with Tailwind CSS, checked across browsers and for accessibility.",
       "Built job-board pages with client-side filtering and debounced search on top of a REST API.",
       "Added regex-based form validation that caught invalid input before it reached the backend.",
     ],

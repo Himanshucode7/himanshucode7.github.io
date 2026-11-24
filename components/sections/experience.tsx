@@ -11,7 +11,7 @@ export function Experience() {
   const firstExpandable = experience.find((item) => item.highlights.length > 0)?.id;
 
   return (
-    <section id={copy.id} aria-labelledby={headingId(copy)} className="section-y">
+    <section id={copy.id} aria-labelledby={headingId(copy)} className="tone-light section-y">
       <div className="container-page">
         <SectionHeading copy={copy} />
 

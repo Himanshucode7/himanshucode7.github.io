@@ -15,11 +15,18 @@ export function Contact() {
   const destinations: Destination[] = [
     { label: ui.email, value: profile.email, href: `mailto:${profile.email}`, external: false },
     ...socials.map((social) => ({ label: social.label, value: social.handle, href: social.href, external: true })),
-    ...(profile.resume ? [{ label: ui.resume, value: ui.resumeFormat, href: withBasePath(profile.resume), external: true }] : []),
+    ...(profile.resume
+      ? [{ label: ui.resume, value: ui.resumeFormat, href: withBasePath(profile.resume), external: true }]
+      : []),
   ];
 
   return (
-    <section id={copy.id} aria-labelledby={headingId(copy)} className="section-y">
+    // At least a screen tall, so the outro has fully scrolled away when the page ends.
+    <section
+      id={copy.id}
+      aria-labelledby={headingId(copy)}
+      className="tone-light section-y flex min-h-svh flex-col justify-center"
+    >
       <div className="container-page">
         <Reveal>
           <p className="label flex items-center gap-2">
@@ -31,7 +38,7 @@ export function Contact() {
         <div className="mt-8 grid gap-16 md:grid-cols-12 md:gap-6">
           <div className="md:col-span-8">
             <Reveal delay={1}>
-              <h2 id={headingId(copy)} className="text-display font-semibold">
+              <h2 id={headingId(copy)} className="text-display font-medium">
                 {copy.title}
               </h2>
             </Reveal>

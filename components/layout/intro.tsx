@@ -11,7 +11,7 @@ export function Intro({ name }: { name: string }) {
       className="intro pointer-events-none fixed inset-0 z-100 place-items-center bg-background"
     >
       <span className="mask-line">
-        <span className="intro-name block text-h2 font-semibold">{name}</span>
+        <span className="intro-name block text-h2 font-medium uppercase">{name}</span>
       </span>
     </div>
   );

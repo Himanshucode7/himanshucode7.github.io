@@ -18,13 +18,13 @@ export function SectionHeading({ copy, className }: { copy: SectionCopy; classNa
       </Reveal>
       <div className="grid gap-6 md:col-span-9">
         <Reveal delay={1}>
-          <h2 id={headingId(copy)} className="text-h2 font-semibold">
+          <h2 id={headingId(copy)} className="max-w-[18ch] text-h2 font-medium">
             {copy.title}
           </h2>
         </Reveal>
         {copy.intro && (
           <Reveal delay={2}>
-            <p className="max-w-[60ch] text-lead text-muted">{copy.intro}</p>
+            <p className="max-w-[56ch] text-lead text-muted">{copy.intro}</p>
           </Reveal>
         )}
       </div>

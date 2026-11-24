@@ -1,53 +1,20 @@
 @import "tailwindcss";
 
 /*
- * Theme model
- * - No data-theme attribute: follow the OS (color-scheme: light dark).
- * - data-theme="light" | "dark": explicit choice, set before paint by the
- *   inline script in app/layout.tsx and by the theme toggle.
- * Colors are written once with light-dark(), so both themes live side by side.
+ * Tone model
+ * The page alternates black and light sections, so colour is set per section
+ * rather than per theme: `.tone-dark` (also the :root default, since the page
+ * opens on the black hero) and `.tone-light`. Components only ever use the
+ * semantic tokens below, so they adapt to whichever tone they sit in.
  */
-@custom-variant dark {
-  &:where([data-theme="dark"], [data-theme="dark"] *) {
-    @slot;
-  }
-  @media (prefers-color-scheme: dark) {
-    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
-      @slot;
-    }
-  }
-}
-
 :root {
-  color-scheme: light dark;
-
-  /* Surfaces */
-  --background: light-dark(oklch(0.985 0.001 106.4), oklch(0.141 0.004 285.8));
-  --surface: light-dark(oklch(1 0 0), oklch(0.179 0.004 286));
-  --surface-raised: light-dark(oklch(0.97 0.002 106.4), oklch(0.205 0.005 286));
-
-  /* Text */
-  --foreground: light-dark(oklch(0.145 0 0), oklch(0.985 0 0));
-  --muted: light-dark(oklch(0.442 0.015 285.8), oklch(0.712 0.013 286.1));
-
-  /* Lines. --border is decorative; --border-strong meets 3:1 for form controls. */
-  --border: light-dark(oklch(0.145 0 0 / 0.09), oklch(1 0 0 / 0.08));
-  --border-strong: oklch(0.552 0.014 285.9);
-
-  /* Accent: violet. --accent for fills/rings, --accent-text for small text (≥ 6:1). */
-  --accent: light-dark(oklch(0.513 0.236 282.7), oklch(0.599 0.23 286.2));
-  --accent-text: light-dark(oklch(0.513 0.236 282.7), oklch(0.708 0.164 289.5));
-  --accent-soft: light-dark(oklch(0.513 0.236 282.7 / 0.08), oklch(0.599 0.23 286.2 / 0.14));
-  --focus-ring: var(--accent);
-
-  /* Hero mesh — the only place colour is allowed to bloom. */
-  --mesh-1: light-dark(oklch(0.72 0.16 286 / 0.32), oklch(0.55 0.23 286 / 0.42));
-  --mesh-2: light-dark(oklch(0.8 0.1 250 / 0.3), oklch(0.42 0.17 268 / 0.38));
-  --mesh-3: light-dark(oklch(0.85 0.08 330 / 0.28), oklch(0.5 0.14 320 / 0.18));
-  --grid-dot: light-dark(oklch(0.145 0 0 / 0.1), oklch(1 0 0 / 0.07));
+  /* Palette */
+  --ink: oklch(0.145 0 0); /* matches the backdrop of the black and white portraits */
+  --paper: oklch(0.97 0.004 84); /* warm off-white */
 
   /* Layout */
   --gutter: 16px;
+  --edge: 16px; /* distance of fixed UI from the viewport edge */
   --header-height: 64px;
 
   /* Motion */
@@ -58,22 +25,65 @@
   --stagger: 50ms;
 }
 
-/* Works on any element, so a subtree (e.g. a styleguide panel) can force a theme. */
-[data-theme="light"] {
-  color-scheme: light;
+:root,
+.tone-dark {
+  color-scheme: dark;
+  --background: var(--ink);
+  --surface: oklch(0.185 0 0);
+  --surface-raised: oklch(0.225 0 0);
+  --foreground: oklch(0.985 0 0);
+  --muted: oklch(0.74 0 0); /* ≥ 8:1 on ink */
+  --border: oklch(1 0 0 / 0.12);
+  --border-strong: oklch(1 0 0 / 0.42); /* ≥ 3:1 for form controls */
+  /* Accent: the warm light of the "Dream Bigger" sunset. Used sparingly. */
+  --accent: oklch(0.78 0.13 58);
+  --accent-text: oklch(0.83 0.1 62);
+  --accent-soft: oklch(0.78 0.13 58 / 0.14);
+  --on-accent: var(--ink);
+  --focus-ring: var(--accent);
 }
 
-[data-theme="dark"] {
-  color-scheme: dark;
+.tone-light,
+.tokens-light {
+  color-scheme: light;
+  --background: var(--paper);
+  --surface: oklch(0.993 0.002 84);
+  --surface-raised: oklch(0.94 0.006 84);
+  --foreground: oklch(0.17 0 0);
+  --muted: oklch(0.46 0.008 70); /* ≥ 6:1 on paper */
+  --border: oklch(0.17 0 0 / 0.12);
+  --border-strong: oklch(0.56 0.01 70);
+  --accent: oklch(0.62 0.16 45);
+  --accent-text: oklch(0.52 0.15 42); /* ≥ 5:1 on paper */
+  --accent-soft: oklch(0.62 0.16 45 / 0.12);
+  --on-accent: oklch(1 0 0);
+  --focus-ring: var(--accent);
+}
+
+.tone-dark,
+.tone-light {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* `.tokens-light`: light tokens without the background, for content laid over another surface. */
+.tokens-light {
+  color: var(--foreground);
 }
 
 @media (min-width: 768px) {
   :root {
     --gutter: 24px;
+    --edge: 32px;
   }
 }
 
-@theme {
+/*
+ * Colours are `inline` so utilities read the tone tokens where they are used
+ * (`.text-muted` → `var(--muted)`), instead of a value resolved once on :root.
+ * That is what lets a light section inside the dark page get light-tone colours.
+ */
+@theme inline {
   /* Only semantic colours exist; the default palette is removed on purpose. */
   --color-*: initial;
   --color-background: var(--background);
@@ -86,37 +96,48 @@
   --color-accent: var(--accent);
   --color-accent-text: var(--accent-text);
   --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
   --color-white: oklch(1 0 0);
   --color-black: oklch(0 0 0);
+}
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+@theme {
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
 
-  /* Type scale */
-  --text-display: clamp(3rem, 8vw, 7.5rem);
-  --text-display--line-height: 0.92;
+  /* Type scale: editorial, tight, one weight (500) for display sizes. */
+  --text-display: clamp(3rem, 8.5vw, 8.5rem);
+  --text-display--line-height: 0.9;
   --text-display--letter-spacing: -0.045em;
-  --text-h2: clamp(2rem, 4vw, 3.5rem);
-  --text-h2--line-height: 1.04;
-  --text-h2--letter-spacing: -0.035em;
-  --text-h3: 1.375rem;
-  --text-h3--line-height: 1.3;
-  --text-h3--letter-spacing: -0.02em;
+  --text-h2: clamp(2.25rem, 5.2vw, 5rem);
+  --text-h2--line-height: 0.98;
+  --text-h2--letter-spacing: -0.04em;
+  --text-h3: clamp(1.25rem, 1.6vw, 1.5rem);
+  --text-h3--line-height: 1.22;
+  --text-h3--letter-spacing: -0.025em;
+  --text-statement: clamp(1.5rem, 2.8vw, 2.5rem);
+  --text-statement--line-height: 1.2;
+  --text-statement--letter-spacing: -0.03em;
+  --text-list: clamp(1.1875rem, 1.75vw, 1.625rem);
+  --text-list--line-height: 1.3;
+  --text-list--letter-spacing: -0.02em;
   --text-lead: clamp(1.125rem, 1.4vw, 1.3125rem);
-  --text-lead--line-height: 1.55;
-  --text-lead--letter-spacing: -0.011em;
-  --text-statement: clamp(1.375rem, 2.4vw, 2rem);
-  --text-statement--line-height: 1.38;
-  --text-statement--letter-spacing: -0.02em;
+  --text-lead--line-height: 1.5;
+  --text-lead--letter-spacing: -0.012em;
   --text-body: 1.0625rem;
   --text-body--line-height: 1.6;
   --text-small: 0.9375rem;
   --text-small--line-height: 1.55;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.45;
   --text-label: 0.75rem;
   --text-label--line-height: 1.4;
   --text-label--letter-spacing: 0.06em;
 
   --radius-card: 1rem;
+  --radius-photo: 1.25rem;
 
   --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.04), 0 8px 24px -12px oklch(0 0 0 / 0.12);
 
@@ -128,7 +149,7 @@
 
 @utility container-page {
   width: 100%;
-  max-width: calc(1200px + 2 * var(--gutter));
+  max-width: calc(1280px + 2 * var(--gutter));
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -150,6 +171,9 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
+    /* Keeps the layout still when the menu locks scrolling. */
+    scrollbar-gutter: stable;
+    background: var(--ink);
   }
 
   body {
@@ -165,7 +189,7 @@
 
   ::selection {
     background: var(--accent);
-    color: oklch(1 0 0);
+    color: var(--on-accent);
   }
 
   :focus-visible {
@@ -186,12 +210,21 @@
   [id] {
     scroll-margin-top: calc(var(--header-height) + 24px);
   }
+
+  /* The header floats over every section, so sections land flush with the top. */
+  section[id] {
+    scroll-margin-top: 0;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
   }
+}
+
+html:has(.menu-dialog[open]) {
+  overflow: hidden;
 }
 
 /* ───────────────────────── Motion primitives ───────────────────────── */
@@ -223,9 +256,8 @@
 }
 
 /*
- * Phones: the headline is the LCP element and hydration can block the first
- * animation frame, so it starts mostly visible (painted with the first frame)
- * and only rises the last stretch.
+ * Phones: hydration can block the first animation frame, so the hero name
+ * starts mostly visible (painted with the first frame) and only rises the last stretch.
  */
 @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
   .mask-line > span {
@@ -330,7 +362,7 @@ html[data-reveal-ready] [data-reveal]:not([data-revealed]) .draw-line {
   transition: transform 500ms var(--ease-spring);
 }
 
-/* Bio highlight, scrubbed by scroll. Colour (not opacity) keeps contrast ≥ 7:1. */
+/* Bio highlight, scrubbed by scroll. Colour (not opacity) keeps contrast ≥ 6:1. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .scrub {
@@ -400,76 +432,419 @@ html[data-reveal-ready] [data-reveal]:not([data-revealed]) .draw-line {
   }
 }
 
-/* ───────────────────────── Hero mesh ───────────────────────── */
+/* ───────────────────────── Header & menu ───────────────────────── */
 
-.mesh-blob {
-  position: absolute;
-  border-radius: 9999px;
-  will-change: transform;
+/*
+ * The bar is white and blended with `difference`, so it reads as white on the
+ * black sections and black on the light ones without any scroll logic.
+ * The menu dialog lives outside the blended bar.
+ */
+.header-bar {
+  mix-blend-mode: difference;
+  color: oklch(1 0 0);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .mesh-blob {
-    animation: drift var(--drift, 24s) ease-in-out infinite alternate;
-  }
-
-  [data-paused] .mesh-blob {
-    animation-play-state: paused;
-  }
+.header-bar :focus-visible {
+  outline-color: oklch(1 0 0);
 }
 
-@keyframes drift {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(var(--dx, 4%), var(--dy, 6%), 0) scale(var(--ds, 1.08));
-  }
+.nav-link[aria-current="true"] .nav-bracket {
+  opacity: 1;
 }
 
-.mesh-follow {
-  transform: translate3d(calc(var(--mx, 0) * 24px), calc(var(--my, 0) * 24px), 0);
-  transition: transform 1200ms var(--ease-out-expo);
-}
-
-/* ───────────────────────── Theme switch (view transition) ───────────────────────── */
-
-:root[data-theme-switching]::view-transition-old(root),
-:root[data-theme-switching]::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-/* Popover menu (mobile navigation). */
-[popover].menu-popover {
-  inset: auto;
-  top: calc(var(--header-height) + 8px);
-  right: var(--gutter);
-  left: var(--gutter);
-  width: auto;
+dialog.menu-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
   margin: 0;
+  padding: 0;
+  border: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+dialog.menu-dialog::backdrop {
+  background: transparent;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  [popover].menu-popover {
+  dialog.menu-dialog {
     transition:
-      opacity var(--duration-ui) var(--ease-out-expo),
-      transform var(--duration-ui) var(--ease-out-expo),
-      overlay var(--duration-ui) allow-discrete,
-      display var(--duration-ui) allow-discrete;
+      opacity 400ms var(--ease-out-expo),
+      transform 600ms var(--ease-out-expo),
+      overlay 600ms allow-discrete,
+      display 600ms allow-discrete;
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-2%);
   }
 
-  [popover].menu-popover:popover-open {
+  dialog.menu-dialog[open] {
     opacity: 1;
     transform: none;
   }
 
   @starting-style {
-    [popover].menu-popover:popover-open {
+    dialog.menu-dialog[open] {
       opacity: 0;
-      transform: translateY(-8px);
+      transform: translateY(-2%);
     }
   }
+
+  dialog.menu-dialog[open] .menu-item {
+    animation: enter 700ms var(--ease-out-expo) both;
+    animation-delay: calc(120ms + var(--i, 0) * 45ms);
+  }
+}
+
+/* ───────────────────────── Custom cursor ───────────────────────── */
+
+/* Desktop pointers only; shown over [data-cursor] areas. GSAP moves the outer element. */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  color: oklch(1 0 0);
+  opacity: 0;
+  transition: opacity var(--duration-ui) ease-out;
+}
+
+.cursor[data-visible] {
+  opacity: 1;
+}
+
+.cursor-ring {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  translate: -50% -50%;
+  border: 1.5px solid currentColor;
+  border-radius: 9999px;
+  scale: 0.4;
+  transition: scale 500ms var(--ease-out-expo);
+}
+
+.cursor[data-visible] .cursor-ring {
+  scale: 1;
+}
+
+.cursor-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.has-cursor [data-cursor] {
+  cursor: none;
+}
+
+.has-cursor [data-cursor] :is(a, button) {
+  cursor: pointer;
+}
+
+/* ───────────────────────── Hero ───────────────────────── */
+
+/*
+ * Sticky, so the About panel slides up over it with no JavaScript at all.
+ * Narrow screens: full-bleed portrait, every word below the chin.
+ * Wide screens (landscape): portrait anchored right, words in the left margin.
+ */
+.hero {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: clip;
+  isolation: isolate;
+}
+
+/*
+ * Narrow screens: the frame is sized from the screen width (capped by its
+ * height), so the face fills about 85% of the width and the chin always lands
+ * above the words; it fades into the black below.
+ */
+.hero-stage {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(180vw, 82svh);
+  z-index: -2;
+  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+
+/* Load: the frame settles from a slight zoom. Transform only, so LCP is not delayed. */
+.hero-settle {
+  position: absolute;
+  inset: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-settle {
+    animation: hero-settle 1.8s var(--ease-out-expo) both;
+    animation-delay: var(--intro-delay, 0ms);
+  }
+}
+
+@keyframes hero-settle {
+  from {
+    transform: scale(1.07);
+  }
+}
+
+/* Slightly oversized, so the pointer drift never exposes an edge. */
+.hero-parallax {
+  position: absolute;
+  inset: -2%;
+}
+
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-clock {
+  display: none;
+}
+
+.hero-portrait {
+  position: absolute;
+  inset: 0;
+  /* Soft wipe between looks: GSAP tweens --wipe from 0% to 120%. */
+  mask-image: linear-gradient(var(--wipe-dir, to right), #000 calc(var(--wipe, 120%) - 20%), transparent var(--wipe, 120%));
+}
+
+.hero-portrait picture {
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.hero-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focus, 50% 35%);
+  background-size: cover;
+}
+
+/* The landscape look frames the head smaller; scale it so both faces match. */
+.hero-portrait[data-index="1"] img {
+  scale: 1.1;
+  transform-origin: 50% 32%;
+}
+
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--ink) 4%, oklch(0.145 0 0 / 0.78) 30%, oklch(0.145 0 0 / 0) 58%);
+}
+
+.hero-content {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  gap: 20px;
+  padding: 0 var(--edge) max(20px, env(safe-area-inset-bottom));
+}
+
+.hero-name {
+  font-size: clamp(3.5rem, 17vw, 6.5rem);
+  font-weight: 500;
+  line-height: 0.84;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  /* Optical alignment: cap height starts at the left edge, not the side bearing. */
+  margin-left: -0.04em;
+}
+
+.hero-tagline {
+  font-size: clamp(1.375rem, 2.1vw, 2.125rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  max-width: 17ch;
+}
+
+.hero-time {
+  font-size: clamp(2.75rem, 5.4vw, 5rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+/* On phones the caption would crowd the face; the same words open the About section. */
+@media (max-width: 639px), (max-height: 540px) {
+  .hero-caption {
+    display: none;
+  }
+}
+
+@media (min-width: 640px) and (min-aspect-ratio: 5/4) {
+  .hero-stage {
+    inset: 0 -2vw 0 auto;
+    width: calc(112svh * 0.92);
+    height: 112svh;
+    mask-image:
+      linear-gradient(to right, transparent, #000 22%),
+      linear-gradient(to top, transparent, #000 30%);
+    mask-composite: intersect;
+  }
+
+  .hero-scrim {
+    background: linear-gradient(to top, oklch(0.145 0 0 / 0.85), oklch(0.145 0 0 / 0) 38%);
+  }
+
+  .hero-content {
+    inset: 0;
+    display: block;
+    padding: 0;
+  }
+
+  .hero-intro {
+    position: absolute;
+    top: calc(var(--header-height) + 6svh);
+    left: var(--edge);
+    width: min(30ch, 34vw);
+  }
+
+  .hero-name {
+    position: absolute;
+    left: var(--edge);
+    bottom: var(--edge);
+    font-size: min(10.5vw, 17svh, 15rem);
+  }
+
+  .hero-meta {
+    position: absolute;
+    right: var(--edge);
+    bottom: var(--edge);
+    width: clamp(260px, 24vw, 340px);
+  }
+
+  .hero-clock {
+    display: block;
+  }
+}
+
+@media (min-width: 640px) and (min-aspect-ratio: 5/4) and (max-height: 540px) {
+  .hero-clock {
+    display: none;
+  }
+}
+
+/* ───────────────────────── Projects gallery ───────────────────────── */
+
+/*
+ * Scattered grid, adapted from a print layout: one tile per row with a second
+ * on every third row, placed by lib/scatter-layout.ts at each column count.
+ * Placement arrives as custom properties, so no JavaScript decides layout.
+ */
+.scatter {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  row-gap: 12px;
+}
+
+.scatter-tile {
+  grid-column: var(--col-sm);
+  grid-row: var(--row-sm);
+  --origin: var(--origin-sm);
+}
+
+/* The card inside each cell is what scales, from the inner bottom corner. */
+.scatter-tile > * {
+  transform-origin: var(--origin);
+}
+
+@media (min-width: 640px) {
+  .scatter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 0;
+  }
+
+  .scatter-tile {
+    grid-column: var(--col-md);
+    grid-row: var(--row-md);
+    --origin: var(--origin-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .scatter {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .scatter-tile {
+    grid-column: var(--col-lg);
+    grid-row: var(--row-lg);
+    --origin: var(--origin-lg);
+  }
+}
+
+@media (min-width: 1440px) {
+  .scatter {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .scatter-tile {
+    grid-column: var(--col-xl);
+    grid-row: var(--row-xl);
+    --origin: var(--origin-xl);
+  }
+}
+
+/* ───────────────────────── Outro ───────────────────────── */
+
+/*
+ * A pinned stage (CSS sticky) that GSAP scrubs: black washes to paper, the
+ * headline rises and the call to action grows from the corner. Without motion
+ * (or without JavaScript) it is simply the finished, static scene.
+ */
+.outro-stage {
+  position: relative;
+  min-height: 100svh;
+  overflow: clip;
+  isolation: isolate;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .outro {
+    height: 210svh;
+  }
+
+  .outro-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+  }
+}
+
+.outro-wash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--paper);
+}
+
+.outro-mask {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.outro-mask > span {
+  display: block;
 }
